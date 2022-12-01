@@ -67,7 +67,6 @@ def dl():
 		pages_url += pages_req
 
 	pages_url = pages_url.replace(r'}}', ',').replace(r'{"pages":{','').removesuffix(',') + '}'
-	with open('lal.txt', 'w') as f: f.write(pages_url)
 	pages_url =  json.loads(pages_url)
 	doc = fitz.Document()
 	progress_bar(0, book_infos[3])
