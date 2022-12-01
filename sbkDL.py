@@ -33,10 +33,10 @@ def dl():
 	def get_divisions(x, n):
 	    divs = [0]
 	    if(x < n):
-	        print(-1)
+	        divs.append(-1)
 	    elif (x % n == 0):
 	        for i in range(n):
-	            print(x//n, end =" ")
+	            divs.append(x//n, end =" ")
 	    else:
 	        zp = n - (x % n)
 	        pp = x//n
