@@ -72,11 +72,14 @@ def dl():
 	doc = fitz.Document()
 	progress_bar(0, book_infos[3])
 	for n in range(1, int(book_infos[3])):
-		page_url = pages_url[str(n)]
-		page_data = requests.get(page_url, headers=HEADERS).content
-		page_doc = fitz.open(stream=page_data, filetype="jpg")
-		pdfbytes = page_doc.convert_to_pdf()
-		doc.insert_pdf(fitz.open("pdf",pdfbytes))
+		try:
+			page_url = pages_url[str(n)]
+			page_data = requests.get(page_url, headers=HEADERS).content
+			page_doc = fitz.open(stream=page_data, filetype="jpg")
+			pdfbytes = page_doc.convert_to_pdf()
+			doc.insert_pdf(fitz.open("pdf",pdfbytes))
+		except:
+			doc.new_page()
 		progress_bar(n+1, book_infos[3])
 
 	doc.set_toc(book_infos[4])
