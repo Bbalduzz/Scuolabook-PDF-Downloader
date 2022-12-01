@@ -36,7 +36,7 @@ def dl():
 	        divs.append(-1)
 	    elif (x % n == 0):
 	        for i in range(n):
-	            divs.append(x//n, end =" ")
+	            divs.append(x//n)
 	    else:
 	        zp = n - (x % n)
 	        pp = x//n
