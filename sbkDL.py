@@ -1,7 +1,10 @@
-import requests, json
+import requests, os, shutil, json
+from natsort import natsorted
+from PIL import Image
 from bs4 import BeautifulSoup
-import re
+import re, json
 import fitz
+import math
 
 raw_url = input('Enter the book url: \n')
 book_id = raw_url.split('/')[4]
@@ -27,14 +30,49 @@ def progress_bar(progress, total):
 book_infos = book_info()
 
 def dl():
-	attachment = [f'pages[]={n}&' for n in range(1, int(book_infos[3]))]
-	params = ''.join(attachment)
-	pages_req = requests.get(f'https://webapp.scuolabook.it/books/{book_id}/pages?{params}', headers=HEADERS).json()
+	def get_divisions(x, n):
+	    divs = [0]
+	    if(x < n):
+	        print(-1)
+	    elif (x % n == 0):
+	        for i in range(n):
+	            print(x//n, end =" ")
+	    else:
+	        zp = n - (x % n)
+	        pp = x//n
+	        for i in range(n):
+	            if(i>= zp):
+	            	divs.append(pp + 1)
+	            else:
+	                divs.append(pp)
+	    return divs
 
+	pages_url = '{'
+	if int(book_infos[3]) > 518: # 414 Request-URI Too Large
+		req_nums = math.ceil(int(book_infos[3]) / 518)
+		upto = get_divisions(int(book_infos[3]), req_nums)
+		for i,n in enumerate(upto):
+			if upto[i-1] == upto[-1]:
+				start = 0
+				end = n
+			else:
+				start = upto[i-1]
+				end = int(book_infos[3]) - n + upto[i-1]
+			attachment = [f'pages[]={n}&' for n in range(start, end)]
+			pages_req = requests.get(f'https://webapp.scuolabook.it/books/{book_id}/pages?{"".join(attachment)}', headers=HEADERS).text
+			pages_url += pages_req
+	else:
+		attachment = [f'pages[]={n}&' for n in range(1, int(book_infos[3]))]
+		pages_req = requests.get(f'https://webapp.scuolabook.it/books/{book_id}/pages?{"".join(attachment)}', headers=HEADERS).text
+		pages_url += pages_req
+
+	pages_url = pages_url.replace(r'}}', ',').replace(r'{"pages":{','').removesuffix(',') + '}'
+	with open('lal.txt', 'w') as f: f.write(pages_url)
+	pages_url =  json.loads(pages_url)
 	doc = fitz.Document()
 	progress_bar(0, book_infos[3])
 	for n in range(1, int(book_infos[3])):
-		page_url = pages_req['pages'][str(n)]
+		page_url = pages_url[str(n)]
 		page_data = requests.get(page_url, headers=HEADERS).content
 		page_doc = fitz.open(stream=page_data, filetype="jpg")
 		pdfbytes = page_doc.convert_to_pdf()
