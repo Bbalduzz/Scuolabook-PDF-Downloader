@@ -7,7 +7,6 @@ import fitz
 import math
 
 raw_url = input('Enter the book url: \n')
-book_id = raw_url.split('/')[4]
 
 with open('cookies.txt', 'r') as f: auth = f.readline()
 HEADERS = {'Cookie':auth}
@@ -20,7 +19,7 @@ def book_info():
 	book_metadata = json.loads(book_metadata)
 	raw_toc = book_metadata[0]['spine']['sections']
 	toc = [[1, sec['title'], int(sec['page'])] for sec in raw_toc]
-	return book_metadata[0]['ws_title'], book_metadata[0]['ws_author'], book_metadata[0]['ws_isbn'], book_metadata[0]['ws_num_pages'], toc
+	return book_metadata[0]['ws_title'], book_metadata[0]['ws_author'], book_metadata[0]['ws_isbn'], book_metadata[0]['ws_num_pages'], toc, book_metadata[0]['ws_book_id']
 
 def progress_bar(progress, total):
     percent = 100 * (progress / float(total))
@@ -28,24 +27,15 @@ def progress_bar(progress, total):
     print(f'\r[+] Downloading book... |{bar}| {percent:.2f}%', end='\r')
 
 book_infos = book_info()
+book_id = book_infos[5]
 
 def dl():
 	def get_divisions(x, n):
-	    divs = [0]
-	    if(x < n):
-	        divs.append(-1)
-	    elif (x % n == 0):
-	        for i in range(n):
-	            divs.append(x//n)
-	    else:
-	        zp = n - (x % n)
-	        pp = x//n
-	        for i in range(n):
-	            if(i>= zp):
-	            	divs.append(pp + 1)
-	            else:
-	                divs.append(pp)
-	    return divs
+	    result = [0]
+	    result.extend([x // n] * n)
+	    for i in range(x % n):
+		result[i + 1] += 1
+	    return result
 
 	pages_url = '{'
 	if int(book_infos[3]) > 518: # 414 Request-URI Too Large
