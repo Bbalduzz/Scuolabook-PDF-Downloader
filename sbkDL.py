@@ -29,14 +29,16 @@ def progress_bar(progress, total):
 book_infos = book_info()
 book_id = book_infos[5]
 
+check_pattern = r'"\d+":"https:\S+"'
+
 def dl():
 	def get_divisions(x, n):
-		result = [0]
-		result.extend([x // n] * n)
-		for i in range(x % n):
-			result[i + 1] += 1
-		return result
-	
+	    result = [0]
+	    result.extend([x // n] * n)
+	    for i in range(x % n):
+	        result[i + 1] += 1
+	    return result
+
 	pages_url = '{'
 	if int(book_infos[3]) > 518: # 414 Request-URI Too Large
 		req_nums = math.ceil(int(book_infos[3]) / 518)
@@ -48,13 +50,19 @@ def dl():
 			else:
 				start = upto[i-1]
 				end = int(book_infos[3]) - n + upto[i-1]
+
 			attachment = [f'pages[]={n}&' for n in range(start, end)]
 			pages_req = requests.get(f'https://webapp.scuolabook.it/books/{book_id}/pages?{"".join(attachment)}', headers=HEADERS).text
-			pages_url += pages_req
+			if pages_req:
+				matches = re.search(check_pattern, pages_req)[0]
+				pages_url += f'{matches},'
 	else:
 		attachment = [f'pages[]={n}&' for n in range(1, int(book_infos[3]))]
 		pages_req = requests.get(f'https://webapp.scuolabook.it/books/{book_id}/pages?{"".join(attachment)}', headers=HEADERS).text
-		pages_url += pages_req
+		matches = re.search(check_pattern, pages_req)[0]
+		pages_url += f'{matches},'
+
+	pages_url = pages_url.removesuffix(',') + '}'
 
 	pages_url = pages_url.replace(r'}}', ',').replace(r'{"pages":{','').removesuffix(',') + '}'
 	pages_url =  json.loads(pages_url)
