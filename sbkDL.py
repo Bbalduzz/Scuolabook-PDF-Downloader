@@ -33,11 +33,11 @@ check_pattern = r'"\d+":"https:\S+"'
 
 def dl():
 	def get_divisions(x, n):
-	    result = [0]
-	    result.extend([x // n] * n)
-	    for i in range(x % n):
-	        result[i + 1] += 1
-	    return result
+		result = [0]
+		result.extend([x // n] * n)
+		for i in range(x % n):
+			result[i + 1] += 1
+		return result
 
 	pages_url = '{'
 	if int(book_infos[3]) > 518: # 414 Request-URI Too Large
@@ -53,7 +53,7 @@ def dl():
 
 			attachment = [f'pages[]={n}&' for n in range(start, end)]
 			pages_req = requests.get(f'https://webapp.scuolabook.it/books/{book_id}/pages?{"".join(attachment)}', headers=HEADERS).text
-			if pages_req:
+			if pages_req != None::
 				matches = re.search(check_pattern, pages_req)[0]
 				pages_url += f'{matches},'
 	else:
