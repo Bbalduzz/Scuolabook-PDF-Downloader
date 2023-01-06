@@ -53,7 +53,7 @@ def dl():
 
 			attachment = [f'pages[]={n}&' for n in range(start, end)]
 			pages_req = requests.get(f'https://webapp.scuolabook.it/books/{book_id}/pages?{"".join(attachment)}', headers=HEADERS).text
-			if pages_req != None::
+			if pages_req != None:
 				matches = re.search(check_pattern, pages_req)[0]
 				pages_url += f'{matches},'
 	else:
