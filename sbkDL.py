@@ -53,9 +53,13 @@ def dl():
 
 			attachment = [f'pages[]={n}&' for n in range(start, end)]
 			pages_req = requests.get(f'https://webapp.scuolabook.it/books/{book_id}/pages?{"".join(attachment)}', headers=HEADERS).text
+			assert pages_req != None # debug
 			if pages_req != None:
-				matches = re.search(check_pattern, pages_req)[0]
-				pages_url += f'{matches},'
+				try:
+					matches = re.search(check_pattern, pages_req)[0]
+					pages_url += f'{matches},'
+				except TypeError:
+					pass
 	else:
 		attachment = [f'pages[]={n}&' for n in range(1, int(book_infos[3]))]
 		pages_req = requests.get(f'https://webapp.scuolabook.it/books/{book_id}/pages?{"".join(attachment)}', headers=HEADERS).text
