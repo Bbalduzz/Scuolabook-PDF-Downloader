@@ -4,7 +4,7 @@ Simple and fast script to download high quality pdf from scuolabook web reader.
 - install python [https://www.python.org/downloads/]
    - install pip or pip3
 - install required imports
-   - `pip install fitz`
+   - `pip install PyMuPDF`
    - `pip install bs4`
 - run `python3/py sbkDL.py`
 
