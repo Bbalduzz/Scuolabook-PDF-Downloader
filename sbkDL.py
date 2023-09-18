@@ -1,6 +1,6 @@
-import requests, json, re
-import fitz
+import requests, json, re, fitz
 from dataclasses import dataclass
+from typing import List, Union
 
 raw_url = input('Enter the book url: \n')
 
@@ -13,7 +13,7 @@ class Book:
 	author:str
 	isbn:str
 	pages:str
-	toc: list[list]
+	toc: List[List[Union[int, str]]]
 	identifier: str
 
 def convert_toc(toc_list):
