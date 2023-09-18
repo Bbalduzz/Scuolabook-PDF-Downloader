@@ -76,7 +76,7 @@ def downloadbook():
 		pdfbytes = page_doc.convert_to_pdf()
 		doc.insert_pdf(fitz.open("pdf",pdfbytes))
 		progress_bar(n, book.pages)
-	doc.set_toc(book.pages)
+	doc.set_toc(book.toc)
 	doc.save(f'{book.title}.pdf')
 
 print(f'''
